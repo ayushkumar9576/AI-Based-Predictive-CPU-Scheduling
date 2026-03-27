@@ -2,11 +2,11 @@ import numpy as np
 import pandas as pd
 
 
-Process_Types = {"cpu":1,"io":2,"mixed":3}
+Process_Types = {"cpu":0,"io":1,"mixed":2}
 
-Normal_Dist_Parameter = {1:(13.0,4.0),2:(4.0,1.5),3:(7.5,2.5)}
+Normal_Dist_Parameter = {0:(13.0,4.0),1:(4.0,1.5),2:(7.5,2.5)}
 
-Bias = {1:2.0,2:-1.5,3:0.5}
+Bias = {0:2.0,1:-1.5,2:0.5}
 
 # a.)type b.)arrival time c.) prev burst avg d.) prev burst count e.) burst time
 
@@ -40,3 +40,8 @@ def generate_Sample(n: int = 500, seed: int = 42)->pd.DataFrame:
     })
     return dataFrame
 
+def getFeature(df: pd.DataFrame)->np.ndarray:
+    return df[["Arrival time","Previous Burst Count","Previous Burst Average","Process Type"]].to_numpy()
+
+def getBurst(df:pd.DataFrame)->np.ndarray:
+    return df["Burst Time"].to_numpy()

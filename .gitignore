@@ -1,6 +1,7 @@
 
 virtual/
 Backend/Data/test.ipynb
+Backend/Algorithms/temp.ipynb
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

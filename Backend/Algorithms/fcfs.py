@@ -29,4 +29,4 @@ def fcfs(process):
     calculate_parameter(p) 
     gantt = gantt_chart(p,timeline)
 
-    return (p,round(average_waiting_time(p),4),round(average_turnaround_time(p),4),gantt)
+    return (p,round(average_waiting_time(p),5),round(average_turnaround_time(p),5),gantt)

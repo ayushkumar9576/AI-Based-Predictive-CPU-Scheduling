@@ -1,8 +1,17 @@
 import copy
 from coreLogic.calculation import calculate_parameter, average_turnaround_time, average_waiting_time
 
-def gantt_chart(process)->list:
-    None
+def gantt_chart(timeline)->list:
+    gantt = []
+    curr_time = 0
+
+    for pid,start,end in timeline:
+        if start>curr_time:
+            gantt.append({"pid":"IDLE","start":curr_time,"end":start})
+        gantt.append({"pid":pid,"start":start,"end":end})
+        curr_time = end
+    
+    return gantt
 
 def sjf(process):
     pro = copy.deepcopy(process)
@@ -27,6 +36,7 @@ def sjf(process):
         curr_time = next_process.completion_time
 
         completed.append(next_process)
+        completed_set.add(next_process)
         timeline.append((next_process.pid,next_process.start_time,next_process.completion_time))
 
     calculate_parameter(completed)

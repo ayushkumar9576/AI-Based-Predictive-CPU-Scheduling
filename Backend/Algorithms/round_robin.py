@@ -20,7 +20,7 @@ def gantt_chart(timeline):
     return gantt
 
 def round_robin(processes,quantum=2):
-    quantum = max(1,float(quantum))
+    quantum = max(1,int(quantum))
     pro = copy.deepcopy(processes)
 
     pro.sort(key=lambda x:(x.arrival_time,x.pid))
@@ -28,7 +28,7 @@ def round_robin(processes,quantum=2):
     remaining_time = {p.pid:p.burst_time for p in pro}
     pro_map = {p.pid:p for p in pro}
 
-    curr_time = 0.0
+    curr_time = 0
     queue = deque()
     arrived = set()
     completed = []
@@ -79,7 +79,7 @@ def round_robin(processes,quantum=2):
                 queue.append(p.pid)
                 arrived.add(p.pid)
 
-        if remaining_time[next_pid]<=1e-9:
+        if remaining_time[next_pid]<=0:
             del remaining_time[next_pid]
             org_process.completion_time = end
             completed.append(org_process)
@@ -88,5 +88,5 @@ def round_robin(processes,quantum=2):
 
     calculate_parameter(completed)
     gantt = gantt_chart(timeline)
-    return(completed,round(average_turnaround_time(completed),5),round(average_waiting_time(completed),5),gantt)
+    return(completed,round(average_waiting_time(completed),5),round(average_turnaround_time(completed),5),gantt)
 

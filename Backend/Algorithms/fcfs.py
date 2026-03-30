@@ -1,7 +1,7 @@
 import copy
 from coreLogic.calculation import average_turnaround_time, average_waiting_time, calculate_parameter
 
-def gantt_chart(process,timeline):
+def gantt_chart(timeline)->list:
     gantt = []
     curr_time = 0
     for pid,start,end in timeline:
@@ -27,6 +27,6 @@ def fcfs(process):
         timeline.append((pro.pid,pro.start_time,pro.completion_time))
 
     calculate_parameter(p) 
-    gantt = gantt_chart(p,timeline)
+    gantt = gantt_chart(timeline)
 
     return (p,round(average_waiting_time(p),5),round(average_turnaround_time(p),5),gantt)

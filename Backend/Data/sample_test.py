@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 
-FEATURE_COLS = ["arrival_time","prev_burst_count","prev_burst_avg","is_cpu","is_io","is_mixed"]
-LABEL_COLS = "burst_time"
+FEATURE_COL = ["arrival_time","prev_burst_count","prev_burst_avg","is_cpu","is_io","is_mixed"]
+LABEL_COL = "burst_time"
 
 Process_Types = {"cpu":0,"io":1,"mixed":2}
 Process_Types_Names = {a:b for b,a in Process_Types.items()}
@@ -39,24 +39,53 @@ def generate_sample(n: int = 500, seed: int = None)->pd.DataFrame:
 
     dataFrame = pd.DataFrame({
         "arrival_time":np.round(arrival_time,5),
-        "prev_burst_count":prev_burst_count.astype(int),
         "prev_burst_avg": np.round(prev_burst_avg,5),
+        "prev_burst_count":prev_burst_count.astype(int),
         "process_type":type_Process.astype(int),
         "burst_time":np.round(burst_time,5)
     })
 
-    df = add_new_feature(dataFrame);
+    df = add_new_feature(dataFrame)
     return df
 
-def add_new_feature(df :pd.DataFrame) -> None:
-    None
+def add_new_feature(df :pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+
+    if "process_type" not in df.columns:
+        raise ValueError("Columns not present in Data Frame")
+    
+    str_to_int = {"cpu":0,"io":1,"mixed":2}
+
+    if df["process_type"].dtype == object or df["process_type"].apply(lambda v: isinstance(v, str)).any():
+        df["process_type"] = df["process_type"].astype(str).str.lower()
+        unknown = set(df["process_type"].unique()) - set(str_to_int)
+        if unknown:
+            raise ValueError(
+                f"Unknown string process_type values: {unknown}. "
+                f"Accepted strings: {set(str_to_int)}."
+            )
+        df["process_type"] = df["process_type"].map(str_to_int)
+    
+    valid_types = {0, 1, 2}
+    invalid = set(df["process_type"].unique()) - valid_types
+    if invalid:
+        raise ValueError(
+            f"Invalid process_type values found: {invalid}. "
+            f"Allowed values are {valid_types}."
+        )
+
+    df["is_cpu"] = (df["process_type"]==0).astype(int)  
+    df["is_io"] = (df["process_type"]==1).astype(int)  
+    df["is_mixed"] = (df["process_type"]==2).astype(int)  
+    return df
+
 
 def getFeature(df: pd.DataFrame)->np.ndarray:
     new_columns = {"is_cpu","is_io","is_mixed"}
     if not new_columns.issubset(df.columns):
         df = add_new_feature(df)
 
-    return df[FEATURE_COLS].to_numpy()
+    return df[FEATURE_COL].to_numpy()
 
 def getBurst(df:pd.DataFrame)->np.ndarray:
-    return df[LABEL_COLS].to_numpy()
+    return df[LABEL_COL].to_numpy()

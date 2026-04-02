@@ -1,6 +1,6 @@
 import copy
 from coreLogic.calculation import calculate_parameter,average_turnaround_time,average_waiting_time
-# from prediction.predictor import get_predictor
+# from ML_model.predictor import get_predictor
 
 def gantt_chart(timeline)->list:
     curr_time = 0

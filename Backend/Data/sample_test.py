@@ -1,16 +1,22 @@
 import numpy as np
 import pandas as pd
 
+FEATURE_COLS = ["arrival_time","prev_burst_count","prev_burst_avg","is_cpu","is_io","is_mixed"]
+LABEL_COLS = "burst_time"
 
 Process_Types = {"cpu":0,"io":1,"mixed":2}
+Process_Types_Names = {a:b for b,a in Process_Types.items()}
+
 
 Normal_Dist_Parameter = {0:(13.0,4.0),1:(4.0,1.5),2:(7.5,2.5)}
 
 Bias = {0:2.0,1:-1.5,2:0.5}
 
-# a.)type b.)arrival time c.) prev burst avg d.) prev burst count e.) burst time
 
-def generate_Sample(n: int = 500, seed: int = 42)->pd.DataFrame:
+def generate_sample(n: int = 500, seed: int = None)->pd.DataFrame:
+    if seed is None:
+        seed = np.random.randint(1, 43)
+
     rng = np.random.default_rng(seed)
 
     type_Process = rng.integers(0,3,size=n)
@@ -38,10 +44,19 @@ def generate_Sample(n: int = 500, seed: int = 42)->pd.DataFrame:
         "process_type":type_Process.astype(int),
         "burst_time":np.round(burst_time,5)
     })
-    return dataFrame
+
+    df = add_new_feature(dataFrame);
+    return df
+
+def add_new_feature(df :pd.DataFrame) -> None:
+    None
 
 def getFeature(df: pd.DataFrame)->np.ndarray:
-    return df[["arrival_time","prev_burst_count","prev_burst_avg","process_type"]].to_numpy()
+    new_columns = {"is_cpu","is_io","is_mixed"}
+    if not new_columns.issubset(df.columns):
+        df = add_new_feature(df)
+
+    return df[FEATURE_COLS].to_numpy()
 
 def getBurst(df:pd.DataFrame)->np.ndarray:
-    return df["burst_time"].to_numpy()
+    return df[LABEL_COLS].to_numpy()

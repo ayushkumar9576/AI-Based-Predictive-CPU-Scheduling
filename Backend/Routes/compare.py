@@ -1,11 +1,10 @@
 from flask import Blueprint,request,jsonify
-from coreLogic.process import Process
 from Algorithms.fcfs import fcfs
 from Algorithms.sjf import sjf
 from Algorithms.priority import priority as run_priority
 from Algorithms.round_robin import round_robin
 from Algorithms.ai_schedular import ai_schedular
-from util import parse_process
+from Routes.util import parse_process
 import copy
 
 compare_bp = Blueprint("compare",__name__)

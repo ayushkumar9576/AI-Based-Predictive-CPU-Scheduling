@@ -5,7 +5,7 @@ from Algorithms.priority import priority
 from Algorithms.round_robin import round_robin
 from Algorithms.ai_schedular import ai_schedular
 from ML_model.predictor import get_predictor
-from util import parse_process
+from Routes.util import parse_process
 from Data.store import append_data,load_history
 import logging
 app_logger = logging.getLogger(__name__)

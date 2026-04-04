@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-FEATURE_COL = ["arrival_time","prev_burst_count","prev_burst_avg","is_cpu","is_io","is_mixed"]
+FEATURE_COL = ["arrival_time","prev_burst_avg","prev_burst_count","is_cpu","is_io","is_mixed"]
 LABEL_COL = "burst_time"
 
 Process_Types = {"cpu":0,"io":1,"mixed":2}

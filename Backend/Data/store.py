@@ -16,13 +16,13 @@ def check_header()->None:
             writer.writeheader()
 
 def append_data(processes:list)->None:
-     check_header()
-     time = datetime.datetime.utcnow().isoformat(timespec="seconds")
+    check_header()
+    time = datetime.datetime.utcnow().isoformat(timespec="seconds")
+    
+    with open(Current_Path,"a",newline="") as f:
+        writer = csv.DictWriter(f,fieldnames=Columns)
 
-     with open(Current_Path,"a",newline="") as f:
-         writer = csv.DictWriter(f,fieldnames=Columns)
-
-         for p in processes:
+        for p in processes:
             prev_burst_times = getattr(p,"prev_burst_times",[])
             prev_burst_avg=0.0
             prev_burst_count = 0

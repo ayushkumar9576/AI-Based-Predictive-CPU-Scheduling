@@ -24,7 +24,7 @@ class Process:
     
     def to_dict(self):
         return {
-            "pid": self.pid,
+        "pid": self.pid,
         "arrival_time": self.arrival_time,
         "burst_time": self.burst_time,
         "priority": self.priority,

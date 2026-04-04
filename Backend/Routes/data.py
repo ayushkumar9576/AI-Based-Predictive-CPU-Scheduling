@@ -10,7 +10,7 @@ def dataset():
     try:
         n = min(int(request.args.get("n", 50)), 500)
         seed = int(request.args.get("seed", 42))
-    except:
+    except (ValueError, TypeError):
         return jsonify({"error": "Invalid query parameters"}), 400
     
     df = generate_sample(n=n,seed=seed)

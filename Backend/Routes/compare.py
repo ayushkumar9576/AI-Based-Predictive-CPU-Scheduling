@@ -2,59 +2,18 @@ from flask import Blueprint,request,jsonify
 from coreLogic.process import Process
 from Algorithms.fcfs import fcfs
 from Algorithms.sjf import sjf
-from Algorithms.priority import priority
+from Algorithms.priority import priority as run_priority
 from Algorithms.round_robin import round_robin
 from Algorithms.ai_schedular import ai_schedular
+from util import parse_process
 import copy
 
 compare_bp = Blueprint("compare",__name__)
 
-def parse_process(data):
-    processes = []
-
-    valid_types = {"cpu", "io", "mixed"}
-    required = ["pid", "arrival_time", "burst_time"]
-    
-    for item in data:
-        
-        ptype = str(item.get("process_type", "cpu")).lower()
-        if ptype not in valid_types:
-            raise ValueError(f"Invalid process_type: {ptype}")
-        
-        for field in required:
-            if field not in item:
-                raise ValueError(f"Missing field '{field}' in {item}")
-            
-        try:
-
-            arrival_time = float(item["arrival_time"])
-            burst_time = float(item["burst_time"])
-            priority = int(item.get("priority", 0))
-            if arrival_time < 0 or burst_time <= 0:
-                raise ValueError("Invalid arrival/burst time")
-            if priority < 0:
-                raise ValueError("priority must be >= 0")
-
-            raw_pbt = item.get("prev_burst_times",[])
-            if isinstance(raw_pbt,str):
-                raw_pbt = [float(x.strip()) for x in raw_pbt.split(",") if x.strip()]
-            else:
-                raw_pbt = [float(v) for v in raw_pbt]
-
-            if any(v < 0 for v in raw_pbt):
-                raise ValueError("prev_burst_times must be non-negative")
-
-            p = Process(pid=item["pid"],arrival_time=arrival_time,burst_time=burst_time,priority=priority,process_type=ptype,prev_burst_times=raw_pbt)
-        except Exception as e:
-            raise ValueError(f"{item} -> {str(e)}")
-        
-        processes.append(p)
-    return processes
-
 @compare_bp.route("/compare",methods = ["POST"])
 
 def compare():
-    body = request.get_json()
+    body = request.get_json(silent=True)
     if not body or "processes" not in body:
         return jsonify({"error": "Missing 'processes' in request body"}), 400
     try:
@@ -76,7 +35,7 @@ def compare():
     _, sjf_wt,   sjf_tat,   _ = sjf(copy.deepcopy(processes))
     _, ai_wt,    ai_tat,    _ = ai_schedular(copy.deepcopy(processes))
     _, rr_wt,    rr_tat,    _ = round_robin(copy.deepcopy(processes), quantum=quant)
-    _, prio_wt,  prio_tat,  _ = priority(copy.deepcopy(processes))
+    _, prio_wt,  prio_tat,  _ = run_priority(copy.deepcopy(processes))
 
     return jsonify(
         {

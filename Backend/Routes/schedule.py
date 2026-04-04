@@ -1,18 +1,14 @@
 from flask import Blueprint,request,jsonify
-from coreLogic.process import Process
 from Algorithms.fcfs import fcfs
 from Algorithms.sjf import sjf
 from Algorithms.priority import priority
 from Algorithms.round_robin import round_robin
 from Algorithms.ai_schedular import ai_schedular
 from ML_model.predictor import get_predictor
+from util import parse_process
 from Data.store import append_data,load_history
 import logging
 app_logger = logging.getLogger(__name__)
-
-def parse_processes(data):
-    #will do later
-    return data
 
 schedule_bp = Blueprint("schedule", __name__)
 @schedule_bp.route("/schedule", methods=["POST"])
@@ -26,7 +22,7 @@ def schedule():
     algorithm = request.args.get("algorithm","fcfs").lower()
 
     try:
-        processes = parse_processes(body["processes"])
+        processes = parse_process(body["processes"])
     except Exception as e:
         return jsonify({"error": f"Invalid process data: {str(e)}"}), 400
     

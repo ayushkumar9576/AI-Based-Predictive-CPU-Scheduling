@@ -11,8 +11,8 @@ def gantt_chart(timeline)->list:
         curr_time=end
     return gantt
 
-def fcfs(process):
-    p = copy.deepcopy(process)
+def fcfs(processes):
+    p = copy.deepcopy(processes)
     p.sort(key=lambda x: (x.arrival_time, x.pid))
 
     current_time = 0

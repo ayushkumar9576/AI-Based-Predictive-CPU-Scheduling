@@ -20,8 +20,8 @@ def gantt_chart(timeline)->list:
     return gantt
 
 
-def priority(proccess):
-    pro = copy.deepcopy(proccess)
+def priority(processes):
+    pro = copy.deepcopy(processes)
 
     remaining_time = {p.pid:p.burst_time for p in pro}
 

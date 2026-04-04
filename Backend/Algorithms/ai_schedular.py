@@ -1,6 +1,6 @@
 import copy
 from coreLogic.calculation import calculate_parameter,average_turnaround_time,average_waiting_time
-# from ML_model.predictor import get_predictor
+from ML_model.predictor import get_predictor
 
 def gantt_chart(timeline)->list:
     curr_time = 0
@@ -15,16 +15,16 @@ def gantt_chart(timeline)->list:
     
     return gantt
 
-def ai_schedular(process):
-    pro = copy.deepcopy(process)
-    # predictor = get_predictor()
-    # for p in pro:
-        # p.predicted_burst_time = predictor.predict(
-        #     arrival_time = p.arrival_time,
-        #     prev_burst_avg = p.prev_burst_avg,
-        #     prev_burst_count = p.prev_burst_count,
-        #     process_type = p.process_type
-        # )
+def ai_schedular(processes):
+    pro = copy.deepcopy(processes)
+    predictor = get_predictor()
+    for p in pro:
+        p.predicted_burst_time = predictor.predict(
+            arrival_time = p.arrival_time,
+            prev_burst_avg = p.prev_burst_avg,
+            prev_burst_count = p.prev_burst_count,
+            process_type = p.process_type
+        )
     
     curr_time = 0
     completed = []
@@ -54,4 +54,4 @@ def ai_schedular(process):
     calculate_parameter(completed)
     gantt = gantt_chart(timeline)
 
-    return (completed,round(average_turnaround_time(completed),5),round(average_waiting_time(completed),5),gantt)
+    return (completed,round(average_waiting_time(completed),5),round(average_turnaround_time(completed),5),gantt)

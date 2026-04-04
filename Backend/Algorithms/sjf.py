@@ -13,8 +13,8 @@ def gantt_chart(timeline)->list:
     
     return gantt
 
-def sjf(process):
-    pro = copy.deepcopy(process)
+def sjf(processes):
+    pro = copy.deepcopy(processes)
 
     completed = []
     completed_set = set()

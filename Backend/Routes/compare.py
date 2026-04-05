@@ -30,11 +30,11 @@ def compare():
     if quant <= 0:
         return jsonify({"error": "Quantum must be positive"}), 400
     
-    _, fcfs_wt,  fcfs_tat,  _ = fcfs(copy.deepcopy(processes))
-    _, sjf_wt,   sjf_tat,   _ = sjf(copy.deepcopy(processes))
-    _, ai_wt,    ai_tat,    _ = ai_schedular(copy.deepcopy(processes))
-    _, rr_wt,    rr_tat,    _ = round_robin(copy.deepcopy(processes), quantum=quant)
-    _, prio_wt,  prio_tat,  _ = run_priority(copy.deepcopy(processes))
+    completed_processes, fcfs_wt,  fcfs_tat,  gantt_chart = fcfs(copy.deepcopy(processes))
+    completed_processes, sjf_wt,   sjf_tat,   gantt_chart = sjf(copy.deepcopy(processes))
+    completed_processes, ai_wt,    ai_tat,    gantt_chart = ai_schedular(copy.deepcopy(processes))
+    completed_processes, rr_wt,    rr_tat,    gantt_chart = round_robin(copy.deepcopy(processes), quantum=quant)
+    completed_processes, prio_wt,  prio_tat,  gantt_chart = run_priority(copy.deepcopy(processes))
 
     return jsonify(
         {

@@ -216,8 +216,108 @@
 
         </section>
 
-        
+        <div id="status-bar" class="status-bar hidden" role="status" aria-live="polite">
+            <span class="status-dot"></span>
+            <span id="status-text">Ready</span>
+        </div>
+
+        <!-- Result -->
+        <section id="results-section" class="results-section hidden">
+
+            <!-- 1st Part -->
+            <div class="metrics-row">
+                <div class="metric-card" id="metric-algo">
+                    <p class="metric-label">Algorithm</p>
+                    <p class="metric-value" id="metric-algo-val">—</p>
+                </div>
+                <div class="metric-card glow-teal">
+                    <p class="metric-label">Avg Waiting Time</p>
+                    <p class="metric-value" id="metric-wt">—</p>
+                </div>
+                <div class="metric-card glow-purple">
+                    <p class="metric-label">Avg Turnaround Time</p>
+                    <p class="metric-value" id="metric-tat">—</p>
+                </div>
+                <div class="metric-card glow-orange">
+                    <p class="metric-label">Processes</p>
+                    <p class="metric-value" id="metric-count">—</p>
+                </div>
+            </div>
+
+            <!-- 2nd Part (Table)-->
+            <div class="card" aria-labelledby="results-heading">
+
+                <h2 id="results-heading" class="section-title">
+                    <span class="title-icon">📋</span>Scheduled Results
+                </h2>
+
+                <div class="table-wrap" role="region" aria-label="Scheduling results">
+                    <table id="results-table">
+                        <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>Arrival</th>
+                                <th>Burst</th>
+                                <th>Predicted Burst</th>
+                                <th>Start</th>
+                                <th>Finish</th>
+                                <th>Waiting Time</th>
+                                <th>Turnaround Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-tbody"></tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <!-- 3rd Part (Gantt)-->
+             <div class="card" aria-labelledby="gantt-heading">
+                <h2 id="gantt-heading" class="section-title">
+                    <span class="title-icon">⏱</span>Gantt Chart
+                </h2>
+                <div id="gantt-container" class="gantt-container" role="img" aria-label="Animated Gantt chart"></div>
+                <div id="gantt-timeline" class="gantt-timeline"></div>
+            </div>
+
+            <!-- 4th Part (Graphs)-->
+            <div class="charts-grid">
+                <div class="card chart-card" aria-labelledby="wt-chart-heading">
+                    <h2 id="wt-chart-heading" class="section-title">
+                        <span class="title-icon">📊</span>Waiting Time
+                    </h2>
+                    <div class="chart-wrap"><canvas id="wt-chart"></canvas></div>
+                </div>
+                <div class="card chart-card" aria-labelledby="tat-chart-heading">
+                    <h2 id="tat-chart-heading" class="section-title">
+                        <span class="title-icon">📈</span>Turnaround Time
+                    </h2>
+                    <div class="chart-wrap"><canvas id="tat-chart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- 5th Part (Comparision)-->
+            <div class="card" aria-labelledby="compare-chart-heading" id="compare-card" style="display:none">
+                <h2 id="compare-chart-heading" class="section-title">
+                    <span class="title-icon">⇌</span>Algorithm Comparison
+                </h2>
+                <p class="compare-subtitle">Avg Waiting &amp; Turnaround Time — All 5 Algorithms</p>
+                <div class="chart-wrap chart-wrap-lg"><canvas id="compare-chart"></canvas></div>
+            </div>
+
+        </section>
+
     </main>
+
+    <footer class="site-footer">
+        <p>AI-Based Predictive CPU Scheduler &nbsp;|&nbsp; Built By Ayush Kumar</p>
+    </footer>
+
+    <!-- <script src="js/"></script>
+    <script src="js/"></script>
+    <script src="js/"></script> -->
+
 </body>
+
 
 </html>

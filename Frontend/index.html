@@ -296,14 +296,15 @@
                     <div class="chart-wrap"><canvas id="tat-chart"></canvas></div>
                 </div>
             </div>
-
+                
             <!-- 5th Part (Comparision)-->
             <div class="card" aria-labelledby="compare-chart-heading" id="compare-card" style="display:none">
                 <h2 id="compare-chart-heading" class="section-title">
                     <span class="title-icon">⇌</span>Algorithm Comparison
                 </h2>
-                <p class="compare-subtitle">Avg Waiting &amp; Turnaround Time — All 5 Algorithms</p>
-                <div class="chart-wrap chart-wrap-lg"><canvas id="compare-chart"></canvas></div>
+                <p class="compare-subtitle">Performance score (higher = better) — lower wait/TAT maps to outer edge</p>
+                <div class="chart-wrap chart-wrap-radar"><canvas id="compare-chart"></canvas></div>
+                <div id="compare-table-wrap" class="compare-table-wrap"></div>
             </div>
 
         </section>
@@ -316,7 +317,7 @@
 
     <script src="js/main.js"></script>
     <script src="js/gantt.js"></script>
-    <!-- <script src="js/"></script> -->
+    <script src="js/chart.js"></script>
 
 </body>
 

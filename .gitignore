@@ -3,6 +3,7 @@ virtual/
 Backend/Data/test.ipynb
 Backend/Algorithms/temp.ipynb
 Backend/Algorithms/test.ipynb
+Backend/Data/History.csv
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

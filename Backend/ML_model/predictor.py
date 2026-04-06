@@ -35,7 +35,7 @@ class BurstPredictor:
         
         needed = ["arrival_time","prev_burst_avg","prev_burst_count","process_type","burst_time"]
         hist = history_df[needed].copy()
-
+        hist = hist.fillna(0)
         if len(hist)>=MIN_REAL_ROWS:
             x = getFeature(hist)
             y = hist["burst_time"].values
@@ -61,6 +61,9 @@ class BurstPredictor:
 
     def retrain(self,history_df=None)->None:
         x,y = self._build_training_data(history_df)
+
+        x = np.nan_to_num(x)
+        
         self.model.fit(x,y)
         self._evaluate(x,y)
         self._report_importances()

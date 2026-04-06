@@ -271,11 +271,11 @@ runBtn.addEventListener('click', async () => {
     updateMetrics(data.algorithm, data.avg_waiting_time, data.avg_turnaround_time, data.processes.length);
     renderResultsTable(data.processes);
 
-    // resetGanttColors();
-    // renderGantt(data.gantt, speedMs);
+    resetGanttColors();
+    renderGantt(data.gantt, speedMs);
 
-    // renderWaitingTimeChart(data.processes);
-    // renderTurnaroundTimeChart(data.processes);
+    renderWaitingTimeChart(data.processes);
+    renderTurnaroundTimeChart(data.processes);
 
     showStatus(`${label} simulation complete ✓`);
   } catch (err) {
@@ -286,3 +286,201 @@ runBtn.addEventListener('click', async () => {
     compareBtn.disabled = false;
   }
 });
+
+compareBtn.addEventListener('click', async () => {
+  if (processes.length === 0) return;
+
+  runBtn.disabled     = true;
+  compareBtn.disabled = true;
+  showStatus('Comparing all 5 algorithms…');
+
+  try {
+    const res = await fetch(`${API_BASE}/compare`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(buildRequestBody()),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    resultsSection.classList.remove('hidden');
+    compareCard.style.display = '';
+    compareCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    // renderComparisonChart(data.comparison);
+
+    showStatus('Comparison complete ✓');
+  } catch (err) {
+    showStatus(`⚠ Error: ${err.message}`);
+    console.error(err);
+  } finally {
+    runBtn.disabled     = false;
+    compareBtn.disabled = false;
+  }
+});
+
+resetBtn.addEventListener('click', () => {
+  processes = [];
+  renderProcessTable();
+  resultsSection.classList.add('hidden');
+  compareCard.style.display = 'none';
+  showStatus('', false);
+  pidInput.value       = '';
+  arrivalInput.value   = '';
+  burstInput.value     = '';
+  priorityInput.value  = '';
+  prevBurstInput.value = '';
+  pidInput.placeholder = 'e.g. P1';
+});
+
+const PT_ENC = { 0: 'CPU-bound', 1: 'IO-bound', 2: 'Mixed' };
+const PAGE_SIZE = 20;
+
+let _previewRows   = [];
+let _previewSource = '';
+let _previewPage   = 1;
+
+function renderPage(page) {
+  _previewPage = page;
+  const start = (page - 1) * PAGE_SIZE;
+  const slice = _previewRows.slice(start, start + PAGE_SIZE);
+
+  dataPreviewTbody.innerHTML = '';
+  if (slice.length === 0) {
+    dataPreviewTbody.innerHTML = '<tr><td colspan="5" style="text-align:center">No data available.</td></tr>';
+  } else {
+    slice.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${r.arrival_time ?? '?'}</td>
+        <td>${r.prev_burst_avg ?? '?'}</td>
+        <td>${r.prev_burst_count ?? '?'}</td>
+        <td><span class="badge badge-type badge-${PT_ENC[r.process_type]?.toLowerCase().split('-')[0] ?? 'cpu'}">${PT_ENC[r.process_type] ?? r.process_type}</span></td>
+        <td>${r.burst_time ?? '?'}</td>
+      `;
+      dataPreviewTbody.appendChild(tr);
+    });
+  }
+  renderPagination();
+}
+
+function renderPagination() {
+  const totalPages = Math.ceil(_previewRows.length / PAGE_SIZE);
+  dataPagination.innerHTML = '';
+
+  if (totalPages <= 1) return;
+
+  const bar = document.createElement('div');
+  bar.className = 'pagination-bar';
+
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'pagination-btn';
+  prevBtn.textContent = '← Prev';
+  prevBtn.disabled = _previewPage <= 1;
+  prevBtn.addEventListener('click', () => renderPage(_previewPage - 1));
+
+  const info = document.createElement('span');
+  info.className = 'pagination-info';
+  info.textContent = `Page ${_previewPage} of ${totalPages}`;
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'pagination-btn';
+  nextBtn.textContent = 'Next →';
+  nextBtn.disabled = _previewPage >= totalPages;
+  nextBtn.addEventListener('click', () => renderPage(_previewPage + 1));
+
+  const rowInfo = document.createElement('span');
+  rowInfo.className = 'pagination-count';
+  const start = (_previewPage - 1) * PAGE_SIZE + 1;
+  const end   = Math.min(_previewPage * PAGE_SIZE, _previewRows.length);
+  rowInfo.textContent = `Showing ${start}–${end} of ${_previewRows.length} rows`;
+
+  bar.appendChild(prevBtn);
+  bar.appendChild(info);
+  bar.appendChild(nextBtn);
+  bar.appendChild(rowInfo);
+  dataPagination.appendChild(bar);
+}
+
+function renderDataPreview(rows, source) {
+  _previewRows   = rows || [];
+  _previewSource = source;
+  _previewPage   = 1;
+
+  dataPreviewWrap.classList.remove('hidden');
+  historyBadge.textContent = `${_previewRows.length} row${_previewRows.length !== 1 ? 's' : ''} (${source})`;
+  historyBadge.style.display = '';
+
+  renderPage(1);
+}
+
+let openDataPanel = null;
+
+function collapseDataPanel() {
+  dataPreviewWrap.classList.add('hidden');
+  historyBadge.style.display = 'none';
+  loadDatasetBtn.classList.remove('btn-active');
+  viewHistoryBtn.classList.remove('btn-active');
+  openDataPanel = null;
+}
+
+loadDatasetBtn.addEventListener('click', async () => {
+  if (openDataPanel === 'synthetic') { collapseDataPanel(); showStatus('', false); return; }
+  loadDatasetBtn.disabled = true;
+  showStatus('Loading synthetic dataset sample…');
+  try {
+    const res = await fetch(`${API_BASE}/dataset?n=20`);
+    const data = await res.json();
+    renderDataPreview(data.data, 'synthetic');
+    openDataPanel = 'synthetic';
+    loadDatasetBtn.classList.add('btn-active');
+    viewHistoryBtn.classList.remove('btn-active');
+    showStatus(`Synthetic dataset loaded (${data.count} rows) ✓`);
+  } catch (err) {
+    showStatus(`⚠ Error: ${err.message}`);
+  } finally {
+    loadDatasetBtn.disabled = false;
+  }
+});
+
+viewHistoryBtn.addEventListener('click', async () => {
+  if (openDataPanel === 'history') { collapseDataPanel(); showStatus('', false); return; }
+  viewHistoryBtn.disabled = true;
+  showStatus('Loading execution history…');
+  try {
+    const res = await fetch(`${API_BASE}/history`);
+    const data = await res.json();
+    renderDataPreview(data.data, 'history');
+    openDataPanel = 'history';
+    viewHistoryBtn.classList.add('btn-active');
+    loadDatasetBtn.classList.remove('btn-active');
+    showStatus(data.count === 0 ? 'No history yet — run a simulation first.' : `History loaded (${data.count} rows) ✓`);
+  } catch (err) {
+    showStatus(`⚠ Error: ${err.message}`);
+  } finally {
+    viewHistoryBtn.disabled = false;
+  }
+});
+
+clearHistoryBtn.addEventListener('click', async () => {
+  if (!confirm('Clear all execution history and retrain the AI predictor on synthetic data only?')) return;
+  clearHistoryBtn.disabled = true;
+  showStatus('Clearing history and retraining predictor…');
+  try {
+    const res = await fetch(`${API_BASE}/history/clear`, { method: 'POST' });
+    const data = await res.json();
+    collapseDataPanel();
+    showStatus(`History cleared (${data.rows_deleted} rows deleted). Predictor reset. ✓`);
+  } catch (err) {
+    showStatus(`⚠ Error: ${err.message}`);
+  } finally {
+    clearHistoryBtn.disabled = false;
+  }
+});
+
+onAlgoChange();
+renderProcessTable();

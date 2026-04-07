@@ -52,7 +52,7 @@ function renderGantt(ganttData, speedMs) {
 
 		if (color) {
 			blockEl.style.background = `linear-gradient(135deg, ${color}cc, ${color}88)`;
-			blockEl.style.boxShadow = `0 2px 14px ${color}55, inset 0 1px 0 rgba(255,255,255,0.15)`;
+			blockEl.style.boxShadow = `0 2px 4px ${color}55, inset 0 0px 0 rgb(255, 255, 255)`;
 		}
 		blockEl.title = `${block.pid}  [${block.start} → ${block.end}]`;
 

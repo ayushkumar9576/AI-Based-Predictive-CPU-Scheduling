@@ -385,7 +385,7 @@ function renderPagination() {
 
 	const info = document.createElement('span');
 	info.className = 'pagination-info';
-	info.textContent = `Page ${_previewPage} of ${totalPages}`;
+	info.textContent = `${_previewPage} of ${totalPages}`;
 
 	const nextBtn = document.createElement('button');
 	nextBtn.className = 'pagination-btn';
@@ -397,7 +397,7 @@ function renderPagination() {
 	rowInfo.className = 'pagination-count';
 	const start = (_previewPage - 1) * PAGE_SIZE + 1;
 	const end = Math.min(_previewPage * PAGE_SIZE, _previewRows.length);
-	rowInfo.textContent = `Showing ${start}–${end} of ${_previewRows.length} rows`;
+	// rowInfo.textContent = `Showing ${start}–${end} of ${_previewRows.length} rows`;
 
 	bar.appendChild(prevBtn);
 	bar.appendChild(info);
@@ -484,3 +484,4 @@ clearHistoryBtn.addEventListener('click', async () => {
 
 onAlgoChange();
 renderProcessTable();
+viewHistoryBtn.click();
